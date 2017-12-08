@@ -1,0 +1,18 @@
+<button>Connect To Bluetooth</button>
+
+{% include output_helper.html %}
+
+{% include js_snippet.html filename='connect.js' %}
+
+<script>
+document.querySelector('button').addEventListener('pointerup', function() {
+    if (isWebBluetoothEnabled()) {
+      ChromeSamples.clearLog();
+      onButtonClick();
+    }
+});
+</script>
+
+
+
+{% include_relative _includes/utils.html %}
