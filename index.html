@@ -1,0 +1,24 @@
+<body>Bluetooth controller </body>
+
+<input type='button' value="click me" onclick="myFunction()" />
+
+<p id='demo'></p>
+
+
+
+<script>
+function myFunction() {
+	console.log('Requesting Bluetooth Device');
+	navigator.bluetooth.requestDevice({
+		acceptAllDevices: true
+	})
+	.then(device => {
+		return device.gatt.connect();
+	})
+	.catch(error => {
+		console.log('Argh!' + error);
+	});
+};
+    
+</script>
+
