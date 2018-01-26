@@ -2,6 +2,9 @@
 
 class Kamigami {
 	constructor() {
+		/*
+		Kamigami robot object. Allows for sending and receiving data from kamigami robot.
+		*/
 		this.device = null;
 		this.onDisconnected = this.onDisconnected.bind(this);
 		this.serviceUuid = '708a96f0-f200-4e2f-96f0-9bc43c3a31c8';
@@ -10,6 +13,9 @@ class Kamigami {
 	}
 
 	request() {
+		/*
+		Requests list of bluetooth devices
+		*/
 		let options = {
 			"filters": [{
 				"services": [this.serviceUuid]
@@ -23,6 +29,9 @@ class Kamigami {
 	}
 	
 	connect() {
+		/*
+		Connects to device selected from bluetooth drop down
+		*/
 		if(!this.device) {
 			return Promise.reject('Device is not connected.');
 		}
@@ -30,12 +39,20 @@ class Kamigami {
 	}
 	
 	writeToRobot(data) {
+		/*
+		Writes data to robot
+		args:
+		data: Byte Array (Uint8Array)
+		*/
 		return this.device.gatt.getPrimaryService(this.serviceUuid)
 		.then(service => service.getCharacteristic(this.characteristicWrite))
 		.then(characteristic => characteristic.writeValue(data));
 	}
 	
 	powerOff() {
+		/*
+		Sends byte array to power off robot
+		*/
 		data = '/x01/x01';
 		this.writeToRobot(data);
 		
@@ -43,23 +60,37 @@ class Kamigami {
 	}
 	
 	disconnect() {
+		/*
+		Disconnects from bluetooth device
+		*/
 		if(!this.device){
 			return Promise.reject('Device is not connected.');
 		}
 		return this.device.gatt.disconnect();
 	}
+
 	onDisconnected() {
+		/*
+		Code executes when robot is disconnected
+		*/
 		console.log('Device is disconnected.');
 	}
 
 	getColorArray(str) {
+		/*
+		Converts Hex string to rgb values
+		args:
+		str, color Hex string
+		returns:
+		sendArr, Byte array with rgb values prepared
+		*/
 		var r = str.substr(1, 2);
 		var g = str.substr(3, 4);
 		var b = str.substr(5, 6);
 	
-		var redVal = this.parseColor(r);
-		var greVal = this.parseColor(g);
-		var bluVal = this.parseColor(b);
+		var redVal = this.packVal(r);
+		var greVal = this.packVal(g);
+		var bluVal = this.packVal(b);
 		
 		var sendArr = new Uint8Array(20);
 		sendArr[0] = 2;
@@ -70,7 +101,10 @@ class Kamigami {
 		return sendArr;
 	}
 
-	parseColor(str) {
+	packVal(str) {
+		/*
+		Packs hex byte string into value 0-255
+		*/
 		var arr = new Uint8Array(2);
 	
 		for(var i = 0; i < str.length; i++) {
@@ -96,6 +130,18 @@ class Kamigami {
 		return 15*arr[0] + arr[1];
 		
 	}
+	
+	getSpeedArray(speed1, speed2) {
+		/*
+		Sends motor speeds to robot
+		*/
+		
+		var sendArr = new Uint8Array(20);
+		sendArr[0] = 3;
+		sendArr[1] = speed1;
+		sendArr[2] = speed2;
+	}
+	
 }
 
 
