@@ -10,6 +10,8 @@ class Kamigami {
 		this.serviceUuid = '708a96f0-f200-4e2f-96f0-9bc43c3a31c8';
 		this.characteristicRead = '708a96f2-f200-4e2f-96f0-9bc43c3a31c8';
 		this.characteristicWrite = '708a96f1-f200-4e2f-96f0-9bc43c3a31c8';
+		this.characteristicBatt = '00002a19-0000-1000-8000-00805f9b34fb';
+		this.deviceInfoService = '0000180f-0000-1000-8000-00805f9b34fb';
 	}
 
 	request() {
@@ -19,7 +21,8 @@ class Kamigami {
 		let options = {
 			"filters": [{
 				"services": [this.serviceUuid]
-			}]
+			}],
+			"optionalServices": [this.deviceInfoService]
 		}
 		return navigator.bluetooth.requestDevice(options)
 		.then(device => {
@@ -48,7 +51,44 @@ class Kamigami {
 		.then(service => service.getCharacteristic(this.characteristicWrite))
 		.then(characteristic => characteristic.writeValue(data));
 	}
+	getBattVal() {
 	
+		return this.device.gatt.getPrimaryService(this.deviceInfoService)
+		.then(service => service.getCharacteristic(this.characteristicBatt))
+		.then(characteristic => characteristic.startNotifications())
+		.then(characteristic => {
+  			characteristic.addEventListener('characteristicvaluechanged',
+                                  this.handleBattValueChanged);
+ 		console.log('Notifications have been started.');
+		})
+		.catch(error => { console.log(error); });
+	}
+	
+	startNotifications() {
+		return this.device.gatt.getPrimaryService(this.serviceUuid)
+		.then(service => service.getCharacteristic(this.characteristicRead))
+		.then(characteristic => characteristic.startNotifications())
+		.then(characteristic => {
+  			characteristic.addEventListener('characteristicvaluechanged',
+                                  this.handleCharacteristicValueChanged);
+ 		console.log('Notifications have been started.');
+		})
+		.catch(error => { console.log(error); });
+	
+	}	
+	
+	handleCharacteristicValueChanged(event) {
+  		var value = event.target.value;
+  		console.log('Received ' + value);
+  		
+	}
+	
+	handleBattValueChanged(event) {
+  		var value = event.target.value;
+  		document.getElementById("battLevel").innerHTML = "Battery Level: " + value.getInt8(0);
+  		
+	}
+
 	powerOff() {
 		/*
 		Sends byte array to power off robot
@@ -127,11 +167,11 @@ class Kamigami {
 				case 'f': arr[i] = 15; break;
 			}
 		}
-		return 15*arr[0] + arr[1];
+		return 16*arr[0] + arr[1];
 		
 	}
 	
-	getSpeedArray(speed1, speed2) {
+	sendSpeedArray(speed1, speed2) {
 		/*
 		Sends motor speeds to robot
 		*/
@@ -140,6 +180,7 @@ class Kamigami {
 		sendArr[0] = 3;
 		sendArr[1] = speed1;
 		sendArr[2] = speed2;
+		this.writeToRobot(sendArr);
 	}
 	
 }

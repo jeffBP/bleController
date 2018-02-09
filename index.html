@@ -2,9 +2,16 @@
 
 <input type='button' value="Connect" onclick="onClick()" />
 <p>
-<input type='button' value="Send" onclick="sendColor()" />
+<input type='button' value="Send" onclick="sendColor()" id="sendColor"/>
 
 <input type='color' id="color" />
+
+<input type='range' min="-63" max="63" value=0 id="leftMotor"/>
+<input type='range' min="-63" max="63" value=0 id="rightMotor"/>
+<input type='button' value="Send Motor Data" onclick="sendMotor()"/>
+<div id="battLevel">
+Battery Level: ?
+</div>
 </p>
 
 
@@ -13,10 +20,15 @@
 <script>
 var robot = new Kamigami();
 
+
+
 function onClick() {
 	robot.request()
 	.then(_ => console.log(robot.device))
 	.then(_ => robot.connect())
+	.then(_ => robot.startNotifications())
+	.then(_ => robot.getBattVal());
+
 	
 };
 
@@ -27,6 +39,13 @@ function sendColor() {
 	
 	
 };
+
+function sendMotor() {
+	var left = document.getElementById("leftMotor").value;
+	var right = document.getElementById("rightMotor").value;
+	robot.sendSpeedArray(left, right);
+
+}
 
 
     
