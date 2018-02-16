@@ -12,7 +12,15 @@
 <div id="battLevel">
 Battery Level: ?
 </div>
+<div id="response">
+<input type='button' value="Get Data" onclick="requestData()"/>
+<select id="dataType">
+	<option value='rgb'>RGB Colors</option>
+</select>
+Response: ?
+</div>
 </p>
+
 
 
 
@@ -46,6 +54,12 @@ function sendMotor() {
 	robot.sendSpeedArray(left, right);
 
 }
+
+function requestData() {
+	var dataType = document.getElementById("dataType");
+	console.log(dataType);
+	robot.requestData(dataType.value);
+};
 
 
     

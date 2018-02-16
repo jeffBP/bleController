@@ -79,7 +79,15 @@ class Kamigami {
 	
 	handleCharacteristicValueChanged(event) {
   		var value = event.target.value;
-  		console.log('Received ' + value);
+  		console.log('Received :');
+		console.log(value.getInt8(0));
+		var r = value.getUint8(1);
+		var g = value.getUint8(2);
+		var b = value.getUint8(3);
+		console.log(r);
+		console.log(g);
+		console.log(b);
+
   		
 	}
 	
@@ -181,6 +189,29 @@ class Kamigami {
 		sendArr[1] = speed1;
 		sendArr[2] = speed2;
 		this.writeToRobot(sendArr);
+	}
+	
+	requestData(typeOfData) {
+		var arr = new Uint8Array(20);
+		arr[0] = 8;
+		switch(typeOfData) {
+				case 'rgb': arr[1] = 1; break;
+				case 'motor': arr[1] = 2; break;
+				case 'receivedIR': arr[1] = 3; break;
+				case 'receivedI2C': arr[1] = 4; break;
+				case 'imuTelemetry': arr[1] = 5; break;
+				case 'ambientLight': arr[1] = 6; break;
+				case 'storedDataVolatile': arr[1] = 7; break;
+				case 'storedDataNonVolatile': arr[1] = 8; break;
+				case 'imuConfig': arr[1] = 9; break;
+				case 'notificationConfig': arr[1] = 10; break;
+				case 'usn': arr[1] = 11; break;
+				case 'packetCount': arr[1] = 12; break;
+				case 'commandReceived': arr[1] = 13; break;
+				case 'stabilizedDriveParam': arr[1] = 15; break;
+				case 'filteredIMUVal': arr[1] = 16; break;
+				}
+		this.writeToRobot(arr);
 	}
 	
 }
