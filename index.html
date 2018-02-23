@@ -9,15 +9,22 @@
 <input type='range' min="-63" max="63" value=0 id="leftMotor"/>
 <input type='range' min="-63" max="63" value=0 id="rightMotor"/>
 <input type='button' value="Send Motor Data" onclick="sendMotor()"/>
+<input type='button' value="Stop Motor" onclick="stopMotor()"/>
 <div id="battLevel">
 Battery Level: ?
 </div>
-<div id="response">
+<div id="send">
 <input type='button' value="Get Data" onclick="requestData()"/>
 <select id="dataType">
 	<option value='rgb'>RGB Colors</option>
+	<option value='motor'>Motor Values</option>
+	<option value='imuTelemetry'>IMU Telemetry</option>
+	<option value='ambientLight'>Ambient Light</option>
 </select>
-Response: ?
+
+</div>
+<div id="response">
+Response?
 </div>
 </p>
 
@@ -53,6 +60,9 @@ function sendMotor() {
 	var right = document.getElementById("rightMotor").value;
 	robot.sendSpeedArray(left, right);
 
+}
+function stopMotor() {
+	robot.sendSpeedArray(0, 0);
 }
 
 function requestData() {

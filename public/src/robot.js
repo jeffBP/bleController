@@ -12,6 +12,8 @@ class Kamigami {
 		this.characteristicWrite = '708a96f1-f200-4e2f-96f0-9bc43c3a31c8';
 		this.characteristicBatt = '00002a19-0000-1000-8000-00805f9b34fb';
 		this.deviceInfoService = '0000180f-0000-1000-8000-00805f9b34fb';
+		this.lastMsgType = null;
+		this.lastMsg = null;
 	}
 
 	request() {
@@ -47,6 +49,7 @@ class Kamigami {
 		args:
 		data: Byte Array (Uint8Array)
 		*/
+		
 		return this.device.gatt.getPrimaryService(this.serviceUuid)
 		.then(service => service.getCharacteristic(this.characteristicWrite))
 		.then(characteristic => characteristic.writeValue(data));
@@ -65,36 +68,87 @@ class Kamigami {
 	}
 	
 	startNotifications() {
+		var self = this;
 		return this.device.gatt.getPrimaryService(this.serviceUuid)
 		.then(service => service.getCharacteristic(this.characteristicRead))
 		.then(characteristic => characteristic.startNotifications())
 		.then(characteristic => {
   			characteristic.addEventListener('characteristicvaluechanged',
-                                  this.handleCharacteristicValueChanged);
+                                  function() {
+					var value = event.target.value;
+  					console.log('Received :');
+					var msgType = value.getInt8(0);
+					self.parseMsg(msgType, value, self);
+					
+		});
  		console.log('Notifications have been started.');
 		})
 		.catch(error => { console.log(error); });
 	
 	}	
 	
-	handleCharacteristicValueChanged(event) {
-  		var value = event.target.value;
-  		console.log('Received :');
-		console.log(value.getInt8(0));
-		var r = value.getUint8(1);
-		var g = value.getUint8(2);
-		var b = value.getUint8(3);
-		console.log(r);
-		console.log(g);
-		console.log(b);
+	parseMsg (msgType, msg, self){
+
+		switch(msgType) {
+			case 1 : self.getRGB(msg); break;
+			case 2 : self.getMotor(msg); break;
+			case 3 : self.getIR(msg); break;
+			case 4 : self.getI2C(msg); break;
+			case 5 : self.getIMU(msg); break;
+			case 6 : self.getAmbLight(msg);break;
+		}
+		
 
   		
 	}
 	
+	getRGB(value) {
+		var r = value.getUint8(1);
+		var g = value.getUint8(2);
+		var b = value.getUint8(3);
+		document.getElementById("response").innerHTML = "R: " + r + ", G: " + g + ", B: " + b;
+	
+	}
+	
+	getMotor(value) {
+		var LPWM = value.getUint8(6);
+		var RPWM = value.getUint8(7);	
+		var driveMode = value.getUint8(5);
+		document.getElementById("response").innerHTML = "L: " + LPWM + ", R: " + RPWM + ", Mode: " + driveMode;
+	}
+	
+	getIR(value) {
+		var dir = value.getUint8(1);
+		var command = value.getUint16(2);
+		document.getElementById("response").innerHTML = "Direction: " + dir + ", Command Val " + command;
+	}	
+	
+	getI2C(value) {
+		var addr = value.getUint8(1);
+		var payload = value.slice(2, 19);
+		document.getElementById("response").innerHTML = "Received I2C Command from Address " + addr;
+	}
+	
+	getIMU(value) {
+		var AX = value.getInt16(1);
+		var AY = value.getInt16(3);
+		var AZ = value.getInt16(5);
+		var GX = value.getInt16(7);
+		var GY = value.getInt16(9);
+		var GZ = value.getInt16(11);
+		document.getElementById("response").innerHTML = "AX: " + AX + ", AY: " + AY + ", AZ: " + AZ + ", GX: " + GX + ", GY: " + GY + ", GZ: " + GZ;
+	}
+	
+	getAmbLight(value) {
+		var ambLight = value.getUint16(1);
+		document.getElementById("response").innerHTML = "Ambient Light Reading: " + ambLight;
+				
+	}
+
+
 	handleBattValueChanged(event) {
   		var value = event.target.value;
   		document.getElementById("battLevel").innerHTML = "Battery Level: " + value.getInt8(0);
-  		
 	}
 
 	powerOff() {
