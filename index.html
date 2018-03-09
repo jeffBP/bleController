@@ -26,10 +26,13 @@ Battery Level: ?
 <div id="response">
 Response?
 </div>
-</p>
 
 
 
+<script src="./src/blockly/blockly_compressed.js"></script>
+<script src="./src/blockly/blocks_compressed.js"></script>
+<script src="./src/blockly/javascript_compressed.js"></script>
+<script src="./src/blockly/msg/js/en.js"></script>
 
 <script src="./src/robot.js"></script>
 <script>
@@ -63,16 +66,56 @@ function sendMotor() {
 }
 function stopMotor() {
 	robot.sendSpeedArray(0, 0);
+	document.getElementById("leftMotor").value = 0;
+	document.getElementById("rightMotor").value = 0;
 }
 
 function requestData() {
 	var dataType = document.getElementById("dataType");
-	console.log(dataType);
+	console.log(dataType.value);
 	robot.requestData(dataType.value);
 };
 
 
-    
+function generateCode() {
+		var code = Blockly.JavaScript.workspaceToCode(workspacePlayground);
+		try {
+  			eval(code);
+		} catch (e) {
+  			alert(e);
+		}
+};
 
 </script>
+
+<xml id="toolbox" style="display: none">
+  <block type="controls_if"></block>
+  <block type="controls_repeat_ext"></block>
+  <block type="logic_compare"></block>
+  <block type="math_number"></block>
+  <block type="math_arithmetic"></block>
+  <block type="text"></block>
+  <block type="text_print"></block>
+  <block type="add_two_nums"></block>
+  <block type="set_motors"></block>
+</xml>
+
+<div id="blocklyDiv" style="height: 480px; width: 600px;">
+
+</div>
+<input type="button" value="run blockly" onclick="generateCode()"/>
+<script>
+	var workspacePlayground = Blockly.inject('blocklyDiv',
+		{toolbox: document.getElementById('toolbox')});
+	Blockly.JavaScript.addReservedWords('code');
+
+</script>
+
+
+</p>
+
+
+
+
+
 </body>

@@ -1,5 +1,6 @@
 
 
+
 class Kamigami {
 	constructor() {
 		/*
@@ -88,7 +89,7 @@ class Kamigami {
 	}	
 	
 	parseMsg (msgType, msg, self){
-
+		console.log(msg.getInt8(0));
 		switch(msgType) {
 			case 1 : self.getRGB(msg); break;
 			case 2 : self.getMotor(msg); break;
