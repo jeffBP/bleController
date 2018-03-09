@@ -33,13 +33,16 @@ Response?
 <script src="./src/blockly/blocks_compressed.js"></script>
 <script src="./src/blockly/javascript_compressed.js"></script>
 <script src="./src/blockly/msg/js/en.js"></script>
-
+<script src="./src/blockly/generators/javascript/kamigami_blocks_gen.js"></script>
+<script src="./src/blockly/blocks/kamigami_blocks.js"></script>
 <script src="./src/robot.js"></script>
 <script>
 var robot = new Kamigami();
 
 
-
+function pass() {
+	console.log('yo');
+};
 function onClick() {
 	robot.request()
 	.then(_ => console.log(robot.device))
@@ -77,14 +80,6 @@ function requestData() {
 };
 
 
-function generateCode() {
-		var code = Blockly.JavaScript.workspaceToCode(workspacePlayground);
-		try {
-  			eval(code);
-		} catch (e) {
-  			alert(e);
-		}
-};
 
 </script>
 
@@ -96,8 +91,8 @@ function generateCode() {
   <block type="math_arithmetic"></block>
   <block type="text"></block>
   <block type="text_print"></block>
-  <block type="add_two_nums"></block>
   <block type="set_motors"></block>
+  <block type="wait"></block>
 </xml>
 
 <div id="blocklyDiv" style="height: 480px; width: 600px;">
@@ -109,6 +104,18 @@ function generateCode() {
 		{toolbox: document.getElementById('toolbox')});
 	Blockly.JavaScript.addReservedWords('code');
 
+</script>
+<script>
+
+function generateCode() {
+		var code = Blockly.JavaScript.workspaceToCode(workspacePlayground);
+		try {
+  			eval(code);
+		} catch (e) {
+			console.log(e);
+  			alert(e);
+		}
+};
 </script>
 
 
