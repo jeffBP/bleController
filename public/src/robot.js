@@ -50,10 +50,14 @@ class Kamigami {
 		args:
 		data: Byte Array (Uint8Array)
 		*/
-		
+		var rob = this;
 		return this.device.gatt.getPrimaryService(this.serviceUuid)
 		.then(service => service.getCharacteristic(this.characteristicWrite))
-		.then(characteristic => characteristic.writeValue(data));
+		.then(characteristic => characteristic.writeValue(data))
+		.catch(error => function(){
+			console.log(error);
+			setTimeout(rob.writeToRobot(data), 100);
+		});
 	}
 	getBattVal() {
 	
