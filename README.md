@@ -24,3 +24,6 @@ The second path forward is controller development. As of right now, it is very h
 
 ## Final Thoughts
 Either way, the actual design and aesthetic of the page need work. I was focusing on functionality through most of my development so the visuals took a bit of a back seat. I am not sure how to even approach visual design and don't have the time left in the semester to begin approaching that beast. 
+
+[^1]:[Web-Bluetooth-API](https://developers.google.com/web/updates/2015/07/interact-with-ble-devices-on-the-web) 
+[^2]: [Blockly-API](https://developers.google.com/blockly/)
